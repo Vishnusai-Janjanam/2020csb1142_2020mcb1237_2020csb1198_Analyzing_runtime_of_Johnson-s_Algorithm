@@ -15,7 +15,8 @@ Johnson’s Algorithm is used to find all pair shortest paths in a graphcontaini
 
 Procedure for Running Code:
 
-    1. Compile the code written in c. 
+    1. Compile the code written in c as follows: gcc Code_file_Group_2.c and Execute the program as follows: a.exe 
+    NOTE: If User is running code against input file containing test cases availalbe along with repository as follows: a.exe <<file_name>
     2. Program will ask for number of nodes. 
     3. Then you have to enter which type of groph it is, Directed or Undirected. For Directed Type 'D' and 'U' for undirected. 
     4. Then you have to input edges of graph in following format:
