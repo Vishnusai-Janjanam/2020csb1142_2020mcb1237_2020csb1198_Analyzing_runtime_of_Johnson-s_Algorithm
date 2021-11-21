@@ -1,7 +1,7 @@
 Group Members:
  1.Harpreet Singh: 2020MCB1237
  2.Rishabh Jain: 2020CSB1198
- 3.Vishnu Sai Janajanam: 2020CSB1142
+ 3.Vishnusai Janajanam: 2020CSB1142
 
 Course Instructor: Dr. Anil Shukla
 TA: Sravanthi Chede
