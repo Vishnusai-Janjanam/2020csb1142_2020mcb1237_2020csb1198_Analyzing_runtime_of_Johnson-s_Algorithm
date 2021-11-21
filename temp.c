@@ -57,22 +57,22 @@ int bin_N;
 int map[minN];
 void bin_heapify(int bin_x)
 {
-    int bin_size= bin_N;
+    int bin_size = bin_N;
     int bin_small = bin_x;
-    int bin_l = 2*bin_x +1, bin_r = 2*bin_x+2;
+    int bin_l = 2 * bin_x + 1, bin_r = 2 * bin_x + 2;
 
-    if(bin_l< bin_size && bin_heap[bin_l].F < bin_heap[bin_small].F)            //comparison
+    if (bin_l < bin_size && bin_heap[bin_l].F < bin_heap[bin_small].F)          //comparison
         bin_small = bin_l;
-    if(bin_r< bin_size && bin_heap[bin_r].F < bin_heap[bin_small].F)
+    if (bin_r < bin_size && bin_heap[bin_r].F < bin_heap[bin_small].F)
         bin_small = bin_r;
 
-    if(bin_x != bin_small)                                                      //if change needed
+    if (bin_x != bin_small)                                                     //if change needed
     {
         struct pair temp;
         temp = bin_heap[bin_x];
-        bin_heap[bin_x]= bin_heap[bin_small];                                   //value swap
+        bin_heap[bin_x] = bin_heap[bin_small];                                  //value swap
         map[bin_heap[bin_x].S] = bin_x;
-        bin_heap[bin_small]= temp;
+        bin_heap[bin_small] = temp;
         map[bin_heap[bin_small].S] = bin_small;
         bin_heapify(bin_small);                                                 //recursive call
     }
@@ -82,7 +82,7 @@ void bin_heapify(int bin_x)
 void bin_insert(int bin_val, int bin_dat)
 {
 
-    if(bin_N==0)                // initial heap
+    if (bin_N == 0)             // initial heap
     {
         bin_heap[bin_N].F = bin_val;
         bin_heap[bin_N].S = bin_dat;
@@ -95,7 +95,7 @@ void bin_insert(int bin_val, int bin_dat)
         bin_heap[bin_N].S = bin_dat;
         map[bin_heap[bin_N].S] = bin_N;
         bin_N++;
-        for(int i = bin_N/2-1; i>=0; i--)
+        for (int i = bin_N / 2 - 1; i >= 0; i--)
         {
             bin_heapify(i);
         }
@@ -105,51 +105,51 @@ void bin_insert(int bin_val, int bin_dat)
 void bin_pop()
 {
     int bin_size = bin_N;
-    if(bin_N==0)
+    if (bin_N == 0)
         return;
-    if(bin_N==1)
+    if (bin_N == 1)
     {
-        map[bin_heap[0].S]=-1;
+        map[bin_heap[0].S] = -1;
         bin_N--; //size set to 0
     }
     else
     {
-        struct pair temp = bin_heap[bin_N-1];
-        bin_heap[bin_N-1] = bin_heap[0];    // min element removed
+        struct pair temp = bin_heap[bin_N - 1];
+        bin_heap[bin_N - 1] = bin_heap[0];  // min element removed
         bin_heap[0] = temp;
-        map[bin_heap[bin_N-1].S] = -1;
+        map[bin_heap[bin_N - 1].S] = -1;
         bin_N--;    // size reduced by 1
 
-        for(int i=bin_N/2-1; i>=0; i--)
+        for (int i = bin_N / 2 - 1; i >= 0; i--)
             bin_heapify(i);
     }
 }
 
 void bin_decreaseKey(int bin_val, int bin_dat)
 {
-    if(map[bin_dat]<0)
+    if (map[bin_dat] < 0)
     {
         bin_heap[bin_N].F = bin_val;
         bin_heap[bin_N].S = bin_dat;
         bin_N++;
-        for(int i= bin_N/2-1; i>=0; i--)
+        for (int i = bin_N / 2 - 1; i >= 0; i--)
             bin_heapify(i);
     }
     else
     {
         int i = map[bin_dat];       // current index of key in heap
-        if(bin_val>bin_heap[i].F)
+        if (bin_val > bin_heap[i].F)
             return;
         bin_heap[i].F = bin_val;    //new value set
-        while(i!=0)
+        while (i != 0)
         {
-            if(bin_heap[i].F<bin_heap[i/2].F)       //new value gets abosorbed into the heap
+            if (bin_heap[i].F < bin_heap[i / 2].F)  //new value gets abosorbed into the heap
             {
                 struct pair temp = bin_heap[i];
-                bin_heap[i] = bin_heap[i/2];
-                bin_heap[i/2] = temp;
+                bin_heap[i] = bin_heap[i / 2];
+                bin_heap[i / 2] = temp;
                 map[bin_heap[i].S] = i;
-                map[bin_heap[i/2].S] = i/2;
+                map[bin_heap[i / 2].S] = i / 2;
             }
             else
                 break;
@@ -174,15 +174,15 @@ void bin_dijkstra(int bin_src, int n)
 
     struct pair cur;
 
-    while(bin_N>0)  //while heap has elements
+    while (bin_N > 0) //while heap has elements
     {
         cur = bin_heap[0];
         bin_pop();
-        int u=cur.S;
+        int u = cur.S;
         struct adj_list *temp;
         temp = arr[cur.S];      //adjacency list of current node
 
-        while(temp!=NULL)
+        while (temp != NULL)
         {
             int w = temp->weight;
             int v = temp->node;
@@ -206,184 +206,251 @@ void bin_dijkstra(int bin_src, int n)
 
 ////////////////////////BINOMIAL HEAP//////////////////////////////////////
 
-struct node {
-	int vertex, weight;
+
+struct node {                                   //This stores the pair vertex and weight
+    int vertex, weight;
 }
 typedef node;
 //const int inf = 107374;
-struct binomialNode {
-	node key;
-	int degree;
-	struct binomialNode* parent , *fc, *lc, *ls, *rs;
+struct binomialNode {       // This is the node of the binomial heap
+    node key;
+    int degree;
+    struct binomialNode* parent , *fc, *lc, *ls, *rs;
 }
+// fc means the first child, lc means the last child, ls means the left sibling and rs means the right sibling
 typedef binomialNode;
 binomialNode *binomialHead = NULL;
-
-binomialNode* new_binomialNode(void) {
-	binomialNode* h1  = (binomialNode*)malloc(sizeof(binomialNode));
-	h1->degree = 0, h1->parent = h1->lc = h1->rs = h1->ls = h1->fc = NULL;
-	return h1;
+binomialNode** map1;
+binomialNode* new_binomialNode(void) {          // This function creates a new binomial node and initiaizes the degree to 0 and all pointers to NULL.
+    binomialNode* h1  = (binomialNode*)malloc(sizeof(binomialNode));
+    h1->degree = 0, h1->parent = h1->lc = h1->rs = h1->ls = h1->fc = NULL;
+    return h1;
 }
 
-binomialNode* get_min_binomial_heap(void) {
-	binomialNode* curr =  binomialHead, *result;
-	result = curr;
-	if (result == NULL) return result;
-	node min = curr->key;
-	while (curr) {
-		if (curr->key.weight < min.weight) {
-			min = curr->key;
-			result = curr;
-		}
-		curr = curr->rs;
-	}
-	return result;
+binomialNode* get_min_binomial_heap(void) {     //this function finds the minimum element in the heap
+    binomialNode* curr =  binomialHead, *result;
+    result = curr;
+    if (result == NULL) return result;
+    node min = curr->key;
+    while (curr) {                                      //Searching all the roots(as the roots contain the minimum element of the respective tree)
+        if (curr->key.weight < min.weight) {
+            min = curr->key;
+            result = curr;
+        }
+        curr = curr->rs;
+    }
+    return result;
 }
-binomialNode* union_binomial_heap(binomialNode* h1, binomialNode *h2) {
-	binomialNode* newHeap = NULL, *curr1 = h1, *curr2 = h2;
-	binomialNode* curr3 = newHeap;
-	while (curr1 && curr2) {
-		if (curr1->degree <= curr2->degree) {
-			if (curr3 ==    NULL) {
-				curr3 = newHeap = curr1;
-			}
-			else curr3->rs = curr1;
-			curr1 = curr1->rs;
-		}
-		else {
-			if (curr3 ==    NULL) {
-				curr3 = newHeap = curr2;
-			}
-			else curr3->rs = curr2;
-			curr2 = curr2->rs;
-		}
-		curr3 = curr3->rs;
-	}
-	while (curr1) {
-		curr3->rs = curr1;
-		curr1 = curr1->rs;
-		curr3 = curr3->rs;
-	}
-	while (curr2) {
-		curr3->rs = curr2;
-		curr1 = curr1->rs;
-		curr3 = curr3->rs;
-	}
-	return newHeap;
-}
-binomialNode* merge_binomial_tree(binomialNode*t1, binomialNode* t2) {
-	if (t1->key.weight < t2->key.weight) {
-		binomialNode* temp = t1->lc;
-		t1->lc = t2;
-		(t1->degree)++;
-		t2->parent = t1;
-		t2->rs = temp;
-		if (temp) temp->ls = t2;
-		if (t1->degree == 1) t1->fc = t2;
-		return t1;
-	}
-	binomialNode* temp = t1->lc;
-	(t2->degree)++;
-	t1->parent = t2;
-	t2->lc = t1;
-	t1->rs = temp;
-	if (temp) temp->ls = t1;
-	if (t2->degree == 1) t2->fc = t1;
-	return t2;
-}
-void merge_binomial_heap(void) {
-	if (binomialHead == NULL || binomialHead->rs == NULL)return;
-	binomialNode *ptr = binomialHead, *next = ptr->rs, *nextn = next->rs;
-	while (next) {
-		if (next->degree != ptr->degree) {
-			ptr = next;
-			next = nextn;
-			if (nextn)nextn = nextn->rs;
-		}
-		else if (nextn && nextn->degree == next->degree) {
-			ptr = next;
-			next = nextn;
-			nextn = nextn->rs;
-		}
-		else ptr = merge_binomial_tree(ptr, next);
-	}
+binomialNode* union_binomial_heap(binomialNode* h1, binomialNode *h2) {         // This function unites two binomial heaps
+    binomialNode* newHeap = NULL, *curr1 = h1, *curr2 = h2;
+    binomialNode* curr3 = newHeap;
+    while (curr1 && curr2) {
+        //Adding tree in increasing order of degree
+        if (curr1->degree <= curr2->degree) {
+            if (curr3 ==    NULL) {
+                curr3 = newHeap = curr1;
+            }
+            else {
+                curr3->rs = curr1;
+                curr3 = curr3->rs;
+            }
+            curr1 = curr1->rs;
+        }
+        else {
+            if (curr3 ==    NULL) {
+                curr3 = newHeap = curr2;
+            }
+            else {
+                curr3->rs = curr2;
+                curr3 = curr3->rs;
+            }
+            curr2 = curr2->rs;
+        }
 
+    }
+    // Adding the leftover trees in the first binomial heap.
+    while (curr1) {
+        if (curr3 == NULL)curr3 = newHeap = curr1;
+        else {
+            curr3->rs = curr1;
+            curr3 = curr3->rs;
+        }
+        curr1 = curr1->rs;
+    }
+    // Adding the leftover trees in the first binomial heap.
+
+    while (curr2) {
+        if (curr3 == NULL)curr3 = newHeap = curr2;
+        else {
+            curr3->rs = curr2;
+            curr3 = curr3->rs;
+        }
+        curr2 = curr2->rs;
+    }
+    return newHeap;
 }
-void insert_binomial_node(node x, binomialNode***a) {
-	binomialNode* h1 = new_binomialNode();
-	h1->key = x;
-	*a[x.vertex] = h1;
-	binomialHead = union_binomial_heap(h1, binomialHead);
-	merge_binomial_heap();
+binomialNode* merge_binomial_tree(binomialNode*t1, binomialNode* t2) {      //This function merges two binomial nodes with same degree
+    if (t1->key.weight < t2->key.weight) { // When prev key is smaller then the ptr key.
+        binomialNode* temp = t1->lc;    //Storing the last child of the prev node.
+        t1->lc = t2;        //Updating the last child of prev node
+        (t1->degree)++;     //Updating the degree of ptr node.
+        t2->parent = t1;    //Adding parent of ptr node
+        t2->rs = temp;      //making temp the right sibling of ptr node.
+        if (temp) temp->ls = t2;
+        if (t1->degree == 1) t1->fc = t2;  //If t2 is the first child.
+        return t1;
+    }
+// this executes when key of ptr is samller than key of prev
+    binomialNode* temp = t2->lc;
+    (t2->degree)++;
+    t1->parent = t2;
+    t2->lc = t1;
+    t1->rs = temp;
+    if (temp) temp->ls = t1;
+    if (t2->degree == 1) t2->fc = t1;
+    return t2;
 }
-void delete_min_binomial(void) {
-	binomialNode* min = get_min_binomial_heap();
-	binomialNode* temp_h1 = min->fc, *curr = temp_h1;
-	while (curr) {
-		curr->parent = NULL;
-		curr->ls = curr->rs;
-		curr->ls = NULL;
-		curr = curr->rs;
-	}
-	union_binomial_heap(binomialHead, temp_h1);
-	merge_binomial_heap();
+void merge_binomial_heap(void) {        //This function will merge all the heaps with same degree which are present initially and during the process too.
+    if (binomialHead == NULL || binomialHead->rs == NULL)return;
+    //nextn is next of next
+    binomialNode *prev = NULL, *ptr = binomialHead, *next = ptr->rs, *nextn = next->rs;
+    while (next) {
+        if (next->degree != ptr->degree) {// If degree is not same then update the pointes.
+            prev = ptr;
+            ptr = next;
+            next = nextn;
+            if (nextn)nextn = nextn->rs;
+        }
+        else if (nextn && nextn->degree == next->degree) { // If nextn degree is equal to ptr then updating hte pointers.
+            prev = ptr;
+            ptr = next;
+            next = nextn;
+            nextn = nextn->rs;
+        }
+        else {                                                      //degree of ptr == degree of next.
+            if (prev == NULL) {                             //When first two node are to be merged
+                binomialNode* t1 = nextn;
+                ptr = merge_binomial_tree(ptr, next);
+                binomialHead  = ptr;
+                ptr->rs = t1;
+                next = t1;
+                if (next) nextn = next->rs;
+            }
+            else {                                              //if merging nodes are somewhere in between
+                if (ptr->key.weight < next->key.weight) {
+                    binomialNode* t1 = next->rs;
+                    ptr = merge_binomial_tree(ptr, next);
+                    ptr->rs = t1;
+                    next = t1;
+                }
+                else {
+                    ptr = merge_binomial_tree(ptr, next);
+                    prev->rs = ptr;
+                    next = ptr->rs;
+                    if (next) nextn = next->rs;
+                }
+            }
+        }
+    }
 }
-void decrease_key_binomial_heap(binomialNode* pos, int new_key, binomialNode***a) {
-	pos->key.weight = new_key;
-	binomialNode* par = pos->parent;
-	while (par && par->key.weight > pos->key.weight) {
-		int par_vertex = par->key.vertex;
-		int par_weight = par->key.weight;
-		par ->key.vertex = pos->key.vertex;
-		par->key.weight = pos->key.weight;
-		*a[pos->key.vertex] = par;
-		pos->key.vertex = par_vertex;
-		pos->key.weight = par_weight;
-		*a[par_vertex] = pos;
-		pos = par;
-		par = pos->parent;
-	}
+void insert_binomial_node(node x) {     //Function to insert a binomial node.
+    binomialNode* h1 = new_binomialNode();
+    h1->key = x;
+    map1[x.vertex] = h1;
+    binomialHead = union_binomial_heap(h1, binomialHead);   //Taking union of the two heaps
+    merge_binomial_heap();              //Performing the merge operation
 }
-void dijkstra_binomial(int s, int n) {
-	node temp;
-	binomialNode** map;
-	map = (binomialNode**) malloc(sizeof(binomialNode*) * (n + 1));
-	int vst[n + 1], dis[n + 1];
-	temp.vertex = s, temp.weight = inf;
-	insert_binomial_node(temp, &map);
-	for (int i = 1; i <= n; i++) {
-		vst[i] = 0;
-		dis[i] = inf;
-		if (i != s) {
-			temp.vertex = i;
-			temp.weight = inf;
-			insert_binomial_node(temp, &map);
-		}
-	}
-	dis[s] = 0;
-	while (binomialHead) {
-		binomialNode* min_node = get_min_binomial_heap();
-		delete_min_binomial();
-		int u = min_node->key.vertex;
-		if (vst[u]) continue;
-		vst[u] = 1;
-		struct adj_list* curr = arr[u];
-		while (curr) {
-			if (dis[curr->node] > dis[u] + curr->weight) {
-				dis[curr->node] = dis[u] = curr->weight;
-				decrease_key_binomial_heap(map[curr->node], dis[curr->node], &map);
-			}
-			curr = curr->next;
-		}
-	}
-	for (int i = 1; i <= n; i++)
-	{
-		if (dis[i] == inf)
-			printf("Vertex %d is NOT reachable from source %d.\n", i, s);
-		else
-			printf("Cost of reaching vertex %d from source %d is %d.\n", i, s, dis[i] + h[i] - h[s]);
-	}
+void delete_min_binomial(void) {                //Function to delete the min node of the binomial heap
+    binomialNode* min_node = get_min_binomial_heap();
+    binomialNode* curr = binomialHead, *prev = NULL, *temp_h1;
+    while (curr) {  //Finding the prev node of min node.
+        if (curr == min_node) {
+            if (prev == NULL) {
+                binomialHead = curr->rs;
+            }
+            else {
+                prev->rs = curr->rs;
+            }
+            break;
+        }
+        prev = curr;
+        curr = curr->rs;
+    }
+    temp_h1 = curr->fc;
+    curr = temp_h1;
+    while (curr) {
+        curr->parent = NULL;
+        curr->rs = curr->ls;
+        curr->ls = NULL;
+        curr = curr->rs;
+    }
+    //Updating the heap
+    binomialHead = union_binomial_heap(binomialHead, temp_h1);
+    merge_binomial_heap();
 }
+void decrease_key_binomial_heap(binomialNode* pos, int new_key) {//Function to decrease key
+    pos->key.weight = new_key;
+    binomialNode* par = pos->parent;
+    while (par && par->key.weight > pos->key.weight) {
+        //swapping data and changing the map of the node for the vertices
+        int par_vertex = par->key.vertex;
+        int par_weight = par->key.weight;
+
+        par ->key.vertex = pos->key.vertex;
+        par->key.weight = pos->key.weight;
+
+        map1[pos->key.vertex] = par;
+
+        pos->key.vertex = par_vertex;
+        pos->key.weight = par_weight;
+        map1[par_vertex] = pos;
+        //going up the tree in such a way that binary heap property is maintained.
+        pos = par;
+        par = pos->parent;
+    }
+}
+void dijkstra_binomial(int s, int n) {//Dijsktra using binomial heap
+    node temp;
+    map1 = (binomialNode**) malloc(sizeof(binomialNode*) * (n + 1));//Stores the position of each vertex in the binomial heap
+    int vst[n + 1], dis[n + 1];     //visit and distance array
+    temp.vertex = s, temp.weight = 0;
+    insert_binomial_node(temp);//inserting the  source node.
+    for (int i = 1; i <= n; i++) {
+        map1[i] = NULL;
+        vst[i] = 0;
+        dis[i] = inf;
+        if (i != s) {
+            temp.vertex = i;
+            temp.weight = inf;
+            insert_binomial_node(temp);     // Adding all other nodes with best distance as inf
+        }
+    }
+    dis[s] = 0;
+    while (binomialHead) {
+        binomialNode* min_node = get_min_binomial_heap();//Finding the min node
+        delete_min_binomial();      //Deleting the min node
+        int u = min_node->key.vertex;
+        if (vst[u]) continue;
+        vst[u] = 1;
+        struct adj_list* curr = arr[u];
+        while (curr) {      //traversing the adjacency list of the the vertex u.
+            if (dis[curr->node] > dis[u] + curr->weight) {
+                dis[curr->node] = dis[u] = curr->weight;
+                decrease_key_binomial_heap(map1[curr->node], dis[curr->node]); //decreasing the key.
+            }
+            curr = curr->next;
+        }
+    }
+    //Printing the results of the dijkstra.
+    for (int i = 1; i <= n; i++)
+    {
+        if (dis[i] == inf)
+            printf("Vertex %d is NOT reachable from source %d.\n", i, s);
+        else
+            printf("Cost of reaching vertex %d from source %d is %d.\n", i, s, dis[i] + h[i] - h[s]);
+    }
+}
+
 /////////////////Fibonacci Heap/////////////////////////////////
 struct fib_node//creation of fibonacci heap node
 {
@@ -693,12 +760,12 @@ void fib_dijkstra(int n, int source)//dijkstra algorithm that uses Fibonacci Hea
         }
     }
 
-    for(int i=1;i<=n;i++)//printing distance of each node from source (shotest path)
+    for (int i = 1; i <= n; i++) //printing distance of each node from source (shotest path)
     {
-        if(dist[i]==inf)
-        printf("Vertex %d is NOT reachable from source %d.\n",i,source);
+        if (dist[i] == inf)
+            printf("Vertex %d is NOT reachable from source %d.\n", i, source);
         else
-        printf("Cost of reaching vertex %d from source %d is %d.\n",i,source,dist[i]+h[i]-h[source]);
+            printf("Cost of reaching vertex %d from source %d is %d.\n", i, source, dist[i] + h[i] - h[source]);
 
     }
 }
@@ -800,22 +867,22 @@ void johnson_algorithm(int n)
     scanf("%d", &choice);
 
     time_t start_t;
-   struct timeval start, stop;
-   double sec=0;
+    struct timeval start, stop;
+    double sec = 0;
 
-   gettimeofday(&start,NULL);//for veryfying time of dijkstra run time
+    gettimeofday(&start, NULL); //for veryfying time of dijkstra run time
 
     if (choice == 1)
     {
-        for(int i=1;i<=n;i++)
-        dijkstra_binomial(i,n);//calling dijjkstra for every node as source
+        for (int i = 1; i <= n; i++)
+            dijkstra_binomial(i, n); //calling dijjkstra for every node as source
         printf("Time taken for running on Binomial Heap\n");
     }
     else if (choice == 2)
     {
-        for(int i=1;i<=n;i++){
-         bin_N = 0;
-            bin_dijkstra(i,n);//calling dijkstra using binary heap
+        for (int i = 1; i <= n; i++) {
+            bin_N = 0;
+            bin_dijkstra(i, n); //calling dijkstra using binary heap
         }
         printf("Time taken for running on Binary Heap\n");
     }
@@ -831,10 +898,10 @@ void johnson_algorithm(int n)
     }
 
 
-    gettimeofday(&stop,NULL);
+    gettimeofday(&stop, NULL);
 
     sec = (double)(stop.tv_usec - start.tv_usec) / 1000000 + (double)(stop.tv_sec - start.tv_sec);
-printf(" %f\n",sec);//printing the time taken for dijkstra algorithm
+    printf(" %f\n", sec); //printing the time taken for dijkstra algorithm
 
 }
 
@@ -842,12 +909,12 @@ printf(" %f\n",sec);//printing the time taken for dijkstra algorithm
 
 int main(int argc, char *argv[])
 {
-    bin_heap = malloc(5050*sizeof(struct pair));
+    bin_heap = malloc(5050 * sizeof(struct pair));
     bin_N = 0;
 
-    for(int i=0;i<minN;i++)
+    for (int i = 0; i < minN; i++)
     {
-        map[i]=-1;
+        map[i] = -1;
     }
 
     printf("Enter number of nodes in a graph\n");
