@@ -435,7 +435,7 @@ void dijkstra_binomial(int s, int n) {//Dijsktra using binomial heap
         struct adj_list* curr = arr[u];
         while (curr) {      //traversing the adjacency list of the the vertex u.
             if (dis[curr->node] > dis[u] + curr->weight) {
-                dis[curr->node] = dis[u] = curr->weight;
+                dis[curr->node] = dis[u] + curr->weight;
                 decrease_key_binomial_heap(map1[curr->node], dis[curr->node]); //decreasing the key.
             }
             curr = curr->next;
