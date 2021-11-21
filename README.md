@@ -26,4 +26,5 @@ Procedure for Running Code:
     5. Then Program will  ask user choice to use Heap. Type 1 for Binomial Heap , 2 for Binary Heap and 3 for Fibonacci Heap.
     6. After this program will run and give cost of travelling from source to every node or will output NOT REACHABLE if not reachable.
     7. At the end, program will output time taken for executing Dijkstra wrt Heap choosen by user.
-      NOTE: Execution Time shown here was taken only for running Dijkstra Algorithm according to various Heaps and it does NOT count time taken to print the cost of reaching from             source to edges. It was solely for purpose of comparing Heaps Running time.
+      NOTE: Execution Time shown here was taken only for running Dijkstra Algorithm according to various Heaps and it does NOT count time
+            taken to print the cost of reaching from source to edges. It was solely for purpose of comparing Heaps Running time.
