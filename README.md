@@ -28,3 +28,5 @@ Procedure for Running Code:
     7. At the end, program will output time taken for executing Dijkstra wrt Heap choosen by user.
       NOTE: Execution Time shown in report was taken only for running Dijkstra Algorithm according to various Heaps and it does NOT count time
             taken to print the cost of reaching from source to edges. It was solely for purpose of comparing Heaps Running time.
+    8. Random Test files are attached to repository. Code can be run on these test cases if required.For using different heaps, Kindly change
+       last choice written in sample case files to required as per POINT NO. 5
