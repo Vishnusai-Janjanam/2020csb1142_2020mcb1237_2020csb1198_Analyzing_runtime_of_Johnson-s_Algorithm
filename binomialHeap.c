@@ -1,11 +1,11 @@
 #include<stdio.h>
 #include<stdlib.h>
-
+#include<stdbool.h>
 struct node {
 	int vertex, weight;
 }
 typedef node;
-
+//const int inf = 1073741824;
 struct binomialNode {
 	node key;
 	int degree;
@@ -104,13 +104,14 @@ void merge_binomial_heap(void) {
 	}
 
 }
-void insert_node(node x) {
+void insert_binomial_node(node x, binomialNode***a) {
 	binomialNode* h1 = new_binomialNode();
 	h1->key = x;
+	*a[x.vertex] = h1;
 	binomialHead = union_binomial_heap(h1, binomialHead);
 	merge_binomial_heap();
 }
-void delete_min(void) {
+void delete_min_binomial(void) {
 	binomialNode* min = get_min_binomial_heap();
 	binomialNode* temp_h1 = min->fc, *curr = temp_h1;
 	while (curr) {
@@ -138,6 +139,44 @@ void decrease_key_binomial_heap(binomialNode* pos, int new_key, binomialNode***a
 		par = pos->parent;
 	}
 }
-int main() {
-	return 0;
+void dijkstra_binomial(int s, int n) {
+	node temp;
+	binomialNode** map;
+	map = (binomialNode**) malloc(sizeof(binomialNode*) * (n + 1));
+	int vst[n + 1], dis[n + 1];
+	temp.vertex = s, temp.weight = inf;
+	insert_binomial_node(temp, &map);
+	for (int i = 1; i <= n; i++) {
+		vst[i] = 0;
+		dis[i] = inf;
+		if (i != s) {
+			temp.vertex = i;
+			temp.weight = inf;
+			insert_binomial_node(temp, &map);
+		}
+	}
+	dis[s] = 0;
+	while (binomialHead) {
+		binomialNode* min_node = get_min_binomial_heap();
+		delete_min_binomial();
+		int u = min_node->key.vertex;
+		if (vst[u]) continue;
+		vst[u] = 1;
+		for (int i = 1; i <= n; i++) {
+			if (adj[u][i]) {
+				if (dis[i] > dis[u] + w[u][i]) {
+					dis[i] = dis[u] = w[u][i];
+					decrease_key_binomial_heap(map[i], dis[i], &map);
+				}
+			}
+		}
+	}
+	for (int i = 1; i <= n; i++)
+	{
+		if (dis[i] == inf)
+			printf("Vertex %d is NOT reachable from source %d.\n", i, s);
+		else
+			printf("Cost of reaching vertex %d from source %d is %d.\n", i, s, dis[i] + h[i] - h[s]);
+
+	}
 }
