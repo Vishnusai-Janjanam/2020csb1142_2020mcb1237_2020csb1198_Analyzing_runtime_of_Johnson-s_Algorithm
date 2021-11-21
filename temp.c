@@ -51,45 +51,49 @@ struct pair {
     int F;
     int S;
 };
- 
+
 struct pair* bin_heap;
 int bin_N;
- 
+int map[minN];
 void bin_heapify(int bin_x)
 {
     int bin_size= bin_N;
     int bin_small = bin_x;
     int bin_l = 2*bin_x +1, bin_r = 2*bin_x+2;
- 
-    if(bin_l< bin_size && bin_heap[bin_l].F < bin_heap[bin_small].F)
+
+    if(bin_l< bin_size && bin_heap[bin_l].F < bin_heap[bin_small].F)            //comparison
         bin_small = bin_l;
     if(bin_r< bin_size && bin_heap[bin_r].F < bin_heap[bin_small].F)
         bin_small = bin_r;
- 
-    if(bin_x != bin_small)
+
+    if(bin_x != bin_small)                                                      //if change needed
     {
         struct pair temp;
         temp = bin_heap[bin_x];
-        bin_heap[bin_x]= bin_heap[bin_small];
+        bin_heap[bin_x]= bin_heap[bin_small];                                   //value swap
+        map[bin_heap[bin_x].S] = bin_x;
         bin_heap[bin_small]= temp;
-        bin_heapify(bin_small);
+        map[bin_heap[bin_small].S] = bin_small;
+        bin_heapify(bin_small);                                                 //recursive call
     }
- 
+
 }
- 
+
 void bin_insert(int bin_val, int bin_dat)
 {
- 
-    if(bin_N==0)
+
+    if(bin_N==0)                // initial heap
     {
         bin_heap[bin_N].F = bin_val;
         bin_heap[bin_N].S = bin_dat;
+        map[bin_heap[bin_N].S] = 0;
         bin_N++;
     }
     else
     {
         bin_heap[bin_N].F = bin_val;
         bin_heap[bin_N].S = bin_dat;
+        map[bin_heap[bin_N].S] = bin_N;
         bin_N++;
         for(int i = bin_N/2-1; i>=0; i--)
         {
@@ -97,7 +101,7 @@ void bin_insert(int bin_val, int bin_dat)
         }
     }
 }
- 
+
 void bin_pop()
 {
     int bin_size = bin_N;
@@ -105,58 +109,79 @@ void bin_pop()
         return;
     if(bin_N==1)
     {
-        bin_N--;
+        map[bin_heap[0].S]=-1;
+        bin_N--; //size set to 0
     }
     else
     {
         struct pair temp = bin_heap[bin_N-1];
-        bin_heap[bin_N-1] = bin_heap[0];
+        bin_heap[bin_N-1] = bin_heap[0];    // min element removed
         bin_heap[0] = temp;
-        bin_N--;
- 
+        map[bin_heap[bin_N-1].S] = -1;
+        bin_N--;    // size reduced by 1
+
         for(int i=bin_N/2-1; i>=0; i--)
             bin_heapify(i);
     }
 }
- 
+
 void bin_decreaseKey(int bin_val, int bin_dat)
 {
-    bin_heap[bin_N].F = bin_val;
-    bin_heap[bin_N].S = bin_dat;
-    bin_N++;
- 
-    if(bin_N>1)
+    if(map[bin_dat]<0)
     {
+        bin_heap[bin_N].F = bin_val;
+        bin_heap[bin_N].S = bin_dat;
+        bin_N++;
         for(int i= bin_N/2-1; i>=0; i--)
             bin_heapify(i);
     }
+    else
+    {
+        int i = map[bin_dat];       // current index of key in heap
+        if(bin_val>bin_heap[i].F)
+            return;
+        bin_heap[i].F = bin_val;    //new value set
+        while(i!=0)
+        {
+            if(bin_heap[i].F<bin_heap[i/2].F)       //new value gets abosorbed into the heap
+            {
+                struct pair temp = bin_heap[i];
+                bin_heap[i] = bin_heap[i/2];
+                bin_heap[i/2] = temp;
+                map[bin_heap[i].S] = i;
+                map[bin_heap[i/2].S] = i/2;
+            }
+            else
+                break;
+        }
+    }
 }
- 
+
 void bin_dijkstra(int bin_src, int n)
 {
     bin_insert(0, bin_src);
- 
+
     int dist[n + 5];
     int vis[n + 5];
- 
+
     for (int i = 1; i <= n; i++)
     {
         dist[i] = inf;
         vis[i] = 0;
     }
- 
+
     dist[bin_src] = 0;
- 
+
     struct pair cur;
- 
-    while(bin_N>0)
+
+    while(bin_N>0)  //while heap has elements
     {
         cur = bin_heap[0];
         bin_pop();
         int u=cur.S;
         struct adj_list *temp;
-        temp = arr[cur.S];
- 
+        temp = arr[cur.S];      //adjacency list of current node
+
         while(temp!=NULL)
         {
             int w = temp->weight;
@@ -164,18 +189,18 @@ void bin_dijkstra(int bin_src, int n)
             if (dist[v] > dist[u] + w)
             {
                 dist[v] = dist[u] + w;
- 
+
                 bin_decreaseKey(dist[v], v);
             }
- 
+
             temp = temp->next;
         }
- 
- 
+
+
     }
 }
- 
- 
+
+
 /////////////////////////BINary heap////////////////////////////////
 
 
@@ -193,13 +218,13 @@ struct binomialNode {
 }
 typedef binomialNode;
 binomialNode *binomialHead = NULL;
- 
+
 binomialNode* new_binomialNode(void) {
 	binomialNode* h1  = (binomialNode*)malloc(sizeof(binomialNode));
 	h1->degree = 0, h1->parent = h1->lc = h1->rs = h1->ls = h1->fc = NULL;
 	return h1;
 }
- 
+
 binomialNode* get_min_binomial_heap(void) {
 	binomialNode* curr =  binomialHead, *result;
 	result = curr;
@@ -282,7 +307,7 @@ void merge_binomial_heap(void) {
 		}
 		else ptr = merge_binomial_tree(ptr, next);
 	}
- 
+
 }
 void insert_binomial_node(node x, binomialNode***a) {
 	binomialNode* h1 = new_binomialNode();
@@ -360,10 +385,10 @@ void dijkstra_binomial(int s, int n) {
 	}
 }
 /////////////////Fibonacci Heap/////////////////////////////////
-struct fib_node//creation of fibonacci heap node 
+struct fib_node//creation of fibonacci heap node
 {
-    int dist;//weight of fiboacci node 
-    int vertex;//node number 
+    int dist;//weight of fiboacci node
+    int vertex;//node number
     int degree;//degree of node in fibonacci tree
     int id;//node id at time of creation
     struct fib_node *par;//parent of node in fibonacci tree
@@ -373,11 +398,11 @@ struct fib_node//creation of fibonacci heap node
 };
 
 
-struct fib_node *fib_arr[minN];//declaration of fibonacci array storing pointers to nodes 
-struct fib_node *fib_root;//root to the fibonacci tree 
+struct fib_node *fib_arr[minN];//declaration of fibonacci array storing pointers to nodes
+struct fib_node *fib_root;//root to the fibonacci tree
 
 
-struct fib_node *init_fib_node(int distance, int vertex)//function that returns a new node created for given arguements 
+struct fib_node *init_fib_node(int distance, int vertex)//function that returns a new node created for given arguements
 {
     struct fib_node *temp;
     temp = (struct fib_node *)malloc(sizeof(struct fib_node));//memory allocation
@@ -386,8 +411,8 @@ struct fib_node *init_fib_node(int distance, int vertex)//function that returns 
     temp->left = NULL;
     temp->right = NULL;//assigning NULL to pointers
     temp->degree = 0;
-    temp->vertex = vertex;//assigning the value of node 
-    temp->dist = distance;// assigning distance value to fibonacci nodes 
+    temp->vertex = vertex;//assigning the value of node
+    temp->dist = distance;// assigning distance value to fibonacci nodes
     return temp;
 }
 
@@ -413,10 +438,10 @@ struct fib_node *fib_right_sibling(struct fib_node *temp)//function for finding 
     return temp;
 }
 
-void  fib_add_sibling(struct fib_node *destined, struct fib_node *new_node)//function to add sibling to same degree node 
+void  fib_add_sibling(struct fib_node *destined, struct fib_node *new_node)//function to add sibling to same degree node
 {
     struct fib_node *temp;
-    temp = fib_right_sibling(destined);//destined is node where node is to be added 
+    temp = fib_right_sibling(destined);//destined is node where node is to be added
 
     if (temp == NULL)
         return;
@@ -427,28 +452,28 @@ void  fib_add_sibling(struct fib_node *destined, struct fib_node *new_node)//fun
     new_node->right = NULL;
 
     if (destined->par != NULL)
-        (destined->par)->degree = (destined->par)->degree + 1;//if parent did not had child earlier, increasing it's degree  
+        (destined->par)->degree = (destined->par)->degree + 1;//if parent did not had child earlier, increasing it's degree
 }
 
-void fib_add_child(struct fib_node *destined, struct fib_node *new_node)//function to add new node to a given node 
+void fib_add_child(struct fib_node *destined, struct fib_node *new_node)//function to add new node to a given node
 {
     if (destined == NULL)
         return ;
 
     if (destined->child != NULL)
     {
-        fib_add_sibling(destined->child, new_node);//if given node has any child then we add new node to same branch as of child of given node 
+        fib_add_sibling(destined->child, new_node);//if given node has any child then we add new node to same branch as of child of given node
     }
-    else//else adding this as its child 
+    else//else adding this as its child
     {
         destined->child = new_node;
         destined->degree = 1;
         new_node->par = destined;
     }
-    
+
 }
 
-bool fib_isEmpty()//function to check if fibonacci heap is empty or not 
+bool fib_isEmpty()//function to check if fibonacci heap is empty or not
 {
     if (fib_root == NULL)
         return true;
@@ -469,7 +494,7 @@ struct fib_node *fib_push(int distance, int vertex)// function to add new node i
 
     fib_add_sibling(fib_root, temp);//if root is not empty then adding new node as its sibling
 
-    if (fib_root->dist > temp->dist)//if new node has smaller dist. parameter then making it as root 
+    if (fib_root->dist > temp->dist)//if new node has smaller dist. parameter then making it as root
         fib_root = temp;
 
     return temp;
@@ -490,11 +515,11 @@ void fib_cut_remove(struct fib_node *destined)//function to cut the node from br
         }
         else
         {
-            destined->par->child = NULL;//if it was single node 
+            destined->par->child = NULL;//if it was single node
         }
     }
 
-    if (destined->left != NULL)//adjusting the remaining branch afer removing the node 
+    if (destined->left != NULL)//adjusting the remaining branch afer removing the node
         (destined->left)->right = destined->right;
     if (destined->right != NULL)
         (destined->right)->left = destined->left;
@@ -506,7 +531,7 @@ void fib_cut_remove(struct fib_node *destined)//function to cut the node from br
 
 void consolidate_fib_link(struct fib_node *node_root)//adjusting nodes of fibonacci heap while decreasing its key
 {
-    if (fib_arr[node_root->degree] == NULL)// if node is not yet marked 
+    if (fib_arr[node_root->degree] == NULL)// if node is not yet marked
     {
         fib_arr[node_root->degree] = node_root;
     }
@@ -520,7 +545,7 @@ void consolidate_fib_link(struct fib_node *node_root)//adjusting nodes of fibona
             fib_cut_remove(temp);//cutting the node from current position
             fib_add_child(node_root, temp);//adding it to the top level branch of root
             if (fib_arr[node_root->degree] != NULL)
-                consolidate_fib_link(node_root);//recursively calling function untill node is unmarked 
+                consolidate_fib_link(node_root);//recursively calling function untill node is unmarked
             else
                 fib_arr[node_root->degree] = node_root;//marking the last remaining node while top up recursion
         }
@@ -537,9 +562,9 @@ void consolidate_fib_link(struct fib_node *node_root)//adjusting nodes of fibona
     }
 }
 
-void fib_decreaseKey(int new_dist, struct fib_node *fib_vertex)//decrease key function 
+void fib_decreaseKey(int new_dist, struct fib_node *fib_vertex)//decrease key function
 {
-    fib_vertex->dist = new_dist;//assigning the changed dist parameter to node 
+    fib_vertex->dist = new_dist;//assigning the changed dist parameter to node
 
     struct fib_node *temp = fib_vertex;
     if (fib_vertex->par != NULL)//cutting the current node from current position and adding it to top branch
@@ -568,7 +593,7 @@ struct fib_node *fib_deleteMin()///function that deletes the min key node and re
         temp = temp2;
     }
 
-    temp = fib_left_sibling(fib_root);//finding leftmost siblilng of node 
+    temp = fib_left_sibling(fib_root);//finding leftmost siblilng of node
 
     if (temp == fib_root)
     {
@@ -587,15 +612,15 @@ struct fib_node *fib_deleteMin()///function that deletes the min key node and re
 
     struct fib_node *extra = fib_root;
 
-    fib_cut_remove(fib_root);//cutting the min root and assigning new min key as root 
+    fib_cut_remove(fib_root);//cutting the min root and assigning new min key as root
     fib_root = temp;
 
-    for (int i = 0; i < 100; i++)// max height of fibonacci tree is logn hence assigning NULL to all values upto 100 
+    for (int i = 0; i < 100; i++)// max height of fibonacci tree is logn hence assigning NULL to all values upto 100
     {
         fib_arr[i] = NULL;
     }
 
-    while (temp != NULL)//iterating the branch to find minimum key 
+    while (temp != NULL)//iterating the branch to find minimum key
     {
         if (temp->dist < fib_root->dist)
         {
@@ -603,7 +628,7 @@ struct fib_node *fib_deleteMin()///function that deletes the min key node and re
         }
 
         temp2 = temp->right;
-        consolidate_fib_link(temp);// consolidating the current node 
+        consolidate_fib_link(temp);// consolidating the current node
         temp = temp2;
     }
 
@@ -616,7 +641,7 @@ struct fib_node *fib_deleteMin()///function that deletes the min key node and re
 void fib_dijkstra(int n, int source)//dijkstra algorithm that uses Fibonacci Heap
 {
     fib_root = NULL;//declaring NULL pointer to fibroot
-    struct fib_node *arr_ptr[n + 5];//an array of pointer to fibonacci nodes to further pass as an arguement for various functions 
+    struct fib_node *arr_ptr[n + 5];//an array of pointer to fibonacci nodes to further pass as an arguement for various functions
 
     for (int i = 1; i <= n; i++)
     {
@@ -628,12 +653,12 @@ void fib_dijkstra(int n, int source)//dijkstra algorithm that uses Fibonacci Hea
             arr_ptr[i]->dist = inf;//else infinity
         }
 
-        arr_ptr[i]->id = i;//assigning node id to be same as vertex 
+        arr_ptr[i]->id = i;//assigning node id to be same as vertex
     }
 
-    int dist[n + 5];//declaring the array of dist parameter for every node 
-    int vis[n + 5];//declaring visit array 
-    for (int i = 1; i <= n; i++)//assigning dist and vis values 
+    int dist[n + 5];//declaring the array of dist parameter for every node
+    int vis[n + 5];//declaring visit array
+    for (int i = 1; i <= n; i++)//assigning dist and vis values
     {
         dist[i] = inf;
         vis[i] = 0;
@@ -643,15 +668,15 @@ void fib_dijkstra(int n, int source)//dijkstra algorithm that uses Fibonacci Hea
 
     while (!fib_isEmpty())//iterating the fib heap untill it becomes empty
     {
-        struct fib_node *min_node = fib_deleteMin(fib_root);//getting the minimum key 
-        int u = min_node->id;//getting the id of vertex added   
+        struct fib_node *min_node = fib_deleteMin(fib_root);//getting the minimum key
+        int u = min_node->id;//getting the id of vertex added
 
-        if (vis[u])//if node is already visited then it skips 
+        if (vis[u])//if node is already visited then it skips
             continue;
         vis[u] = 1;//marking it as visited
 
         struct adj_list *temp;
-        temp = arr[u];//getting pointer of current node 
+        temp = arr[u];//getting pointer of current node
 
         while (temp != NULL)//iterating the edge list of node u
         {
@@ -661,7 +686,7 @@ void fib_dijkstra(int n, int source)//dijkstra algorithm that uses Fibonacci Hea
             {
                 dist[v] = dist[u] + w;
 
-                fib_decreaseKey(dist[v], arr_ptr[v]);//decreasing key of node 
+                fib_decreaseKey(dist[v], arr_ptr[v]);//decreasing key of node
             }
 
             temp = temp->next;
@@ -687,11 +712,11 @@ void bellman_ford(int n, int source)
     {
         h[i] = inf;
     }
-    h[source] = 0;//assinging 0 as dummy node 
+    h[source] = 0;//assinging 0 as dummy node
 
     for (int j = 0; j <= n; j++)
     {
-        int extra = 0;//checking if h is assigned a value or not 
+        int extra = 0;//checking if h is assigned a value or not
 
         for (int u = 0; u <= n; u++)
         {
@@ -711,7 +736,7 @@ void bellman_ford(int n, int source)
                 temp = temp->next;
             }
 
-            if (extra == 0)//if no adjustment was made 
+            if (extra == 0)//if no adjustment was made
                 break;
         }
 
@@ -726,7 +751,7 @@ void bellman_ford(int n, int source)
                 int v = temp->node;
                 if (h[u] != inf && h[u] + w < h[v])
                 {
-                    neg = 1;// if node were negative 
+                    neg = 1;// if node were negative
                     break;
                 }
                 temp = temp->next;
@@ -738,16 +763,16 @@ void bellman_ford(int n, int source)
 
 void johnson_algorithm(int n)
 {
-    int src = 0;//0 is taken as dummy node 
+    int src = 0;//0 is taken as dummy node
 
     for (int i = 1; i <= n; i++)//adding edge from 0 to every node of weight 0
     {
         addEdges(0, i, 0);
     }
 
-    bellman_ford(n, 0);//calling bellman ford 
+    bellman_ford(n, 0);//calling bellman ford
 
-    if (neg)//if it contains a negative cycle 
+    if (neg)//if it contains a negative cycle
     {
         printf("Graph contains negative cycle\n");
         return;
@@ -768,7 +793,7 @@ void johnson_algorithm(int n)
         }
     }
 
-    printf("Enter the following choices of heaps for Running Dijkstra Algorithm.\n");//choosing which heap to be used 
+    printf("Enter the following choices of heaps for Running Dijkstra Algorithm.\n");//choosing which heap to be used
 
     printf("1. Binomial Heap.\n2.Binary Heap.\n3.Fibonacci Heap.\n");
     int choice;
@@ -805,11 +830,11 @@ void johnson_algorithm(int n)
         printf("Invalid Choice\n");
     }
 
-   
+
     gettimeofday(&stop,NULL);
 
     sec = (double)(stop.tv_usec - start.tv_usec) / 1000000 + (double)(stop.tv_sec - start.tv_sec);
-printf(" %f\n",sec);//printing the time taken for dijkstra algorithm 
+printf(" %f\n",sec);//printing the time taken for dijkstra algorithm
 
 }
 
@@ -820,13 +845,18 @@ int main(int argc, char *argv[])
     bin_heap = malloc(5050*sizeof(struct pair));
     bin_N = 0;
 
+    for(int i=0;i<minN;i++)
+    {
+        map[i]=-1;
+    }
+
     printf("Enter number of nodes in a graph\n");
     int n;
     scanf("%d", &n);
     for (int i = 0; i < n; i++)
         arr[i] = NULL; //Initializing each node with NULL pointer (empty List)
 
-   
+
 
     printf("Enter the type of graph. Tpye U if Graph is Undirected OR Type D if Graph is Directed.\n");
     char type;
@@ -860,9 +890,9 @@ int main(int argc, char *argv[])
             addEdges(u, v, w);
             addEdges(v, u, w);
         }
-       
 
-        johnson_algorithm(n);//calling johnson's algorithm 
+
+        johnson_algorithm(n);//calling johnson's algorithm
 
     }
     else if (type == 'D')
@@ -891,7 +921,7 @@ int main(int argc, char *argv[])
             // add edges
             addEdges(u, v, w);
         }
-        
+
 
         johnson_algorithm(n);
     }
